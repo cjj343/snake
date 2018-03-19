@@ -1,0 +1,75 @@
+class Random
+{
+	static int queryCount;
+	static int sizeX;
+	static int sizeY;
+	field int coordX;
+	field int coordY;
+
+	constructor Random new()
+	{
+		//used as quasi seed
+		let queryCount = 100;
+
+		//containers
+		let coordX = 0;
+		let coordY = 0;
+
+		//screen size
+		let sizeX = 512;
+		let sizeY = 256;
+
+		return this;
+	}
+
+	method void dispose()
+	{
+        	do Memory.deAlloc(this);
+      		return;
+   	}
+
+   	//calculate a modulus since Jack does not have been in mod function
+   	method int modulusX(int x)
+   	{
+
+   		var int temp;
+
+   		//preps the coord for modulus function
+   		let coordX = sizeX + x + queryCount;
+
+   		//do initial modulus calculation
+   		let temp = coordX - sizeX;
+
+   		//ghetto modulus calculator
+   		while(temp > sizeX)
+   		{
+   			let temp = temp -  sizeX;
+   		}
+
+   		return temp;
+   	}
+
+   	//calculate a modulus since Jack does not have been in mod function
+   	method int modulusY(int y)
+   	{
+   		var int temp;
+
+   		//preps the coord for modulus function
+   		let coordY = sizeY + y + queryCount;
+
+		//do initial modulus calculation
+   		let temp = coordY - sizeY;
+
+   		//ghetto modulus calculator
+   		while(temp > sizeY)
+   		{
+   			let temp = temp -  sizeY;
+   		}
+
+   		//we only need to increment querycount once for every ordered pair
+		let queryCount = queryCount + 100;
+
+   		return temp;
+   	}
+	
+}

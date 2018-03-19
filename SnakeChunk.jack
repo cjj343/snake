@@ -1,0 +1,162 @@
+class SnakeChunk
+{
+	field int x, y, fruitx, fruity, oldFruitX, oldFruitY, size;
+	field Random numGen;
+
+
+	constructor SnakeChunk new()
+	{
+		//start head in midle	
+		let x = 254;
+		let y = 126;
+
+		//size of head is 4 pixels
+		let size = 4;
+
+		//initialize PRNGR
+		let numGen = Random.new();
+
+		//start fruit in quadrant 2
+		let fruitx = 127;
+  		let fruity = 63;
+		
+		do draw();
+		do drawFruit();
+
+		return this;
+	}
+
+	method void dispose()
+	{
+        	do Memory.deAlloc(this);
+      		return;
+   	}
+
+	method void draw() 
+	{
+        	do Screen.setColor(true);
+        	do Screen.drawRectangle(x, y, x + size, y + size);
+      		return;
+  	}
+
+	method void setFruitPos()
+	{
+		let oldFruitX = fruitx;
+		let oldFruitY = fruity;
+
+		//find position of fruit relative to the position of x and y
+		let fruitx = numGen.modulusX(oldFruitX);
+		let fruity = numGen.modulusY(oldFruitY);
+
+		do drawFruit();
+
+		return;
+
+	}
+
+	method void drawFruit()
+	{
+		//erase the old fruit
+	    do Screen.setColor(false);
+        do Screen.drawRectangle(oldFruitX, oldFruitY, oldFruitX + size, oldFruitY + size);
+
+        //draw the new fruit
+		do Screen.setColor(true);
+        do Screen.drawRectangle(fruitx, fruity, fruitx + size, fruity + size);
+      	return;
+	}
+
+	method void resetFruitPos()
+	{
+		if(((fruitx > (x - 4)) & (fruitx < (x + 8))) & ((fruity > (y - 4)) & (fruity < (y + 8))))
+		{
+			do setFruitPos();
+		}
+
+		return;
+	}
+
+ 
+   	method boolean moveChunk(int direction) 
+	{
+		
+		if(direction = 1)
+		{
+      			if (y > 1) 
+			{
+         			do Screen.setColor(false);
+         			do Screen.drawRectangle(x, (y + size) - 1, x + size, y + size);
+         			let y = y - 2;
+         			do Screen.setColor(true);
+         			do Screen.drawRectangle(x, y, x + size, y + 1);
+     	 		}
+
+			if ((y < 0) | (y = 0)) 
+			{
+				return true;
+			}
+
+			return false;
+		}
+
+		if(direction = 2)
+		{
+			if ((y + size) < 254) 
+			{
+         			do Screen.setColor(false);
+         			do Screen.drawRectangle(x, y, x + size, y + 1);
+         			let y = y + 2;
+         			do Screen.setColor(true);
+         			do Screen.drawRectangle(x, (y + size) - 1, x + size, y + size);
+      			}
+
+			if (((y + size) > 254) | ((y + size) = 254)) 
+			{
+				return true;
+			}
+
+			return false;
+		}
+
+		if(direction = 3)
+		{
+			if (x > 1) 
+			{
+         			do Screen.setColor(false);
+         			do Screen.drawRectangle((x + size) - 1, y, x + size, y + size);
+         			let x = x - 2;
+         			do Screen.setColor(true);
+         			do Screen.drawRectangle(x, y, x + 1, y + size);
+      			}
+
+			if ((x < 0) | (x = 0)) 
+			{
+				return true;
+			}
+
+			return false;
+		}
+
+		if(direction = 4)
+		{
+			if ((x + size) < 510) 
+			{
+         			do Screen.setColor(false);
+         			do Screen.drawRectangle(x, y, x + 1, y + size);
+         			let x = x + 2;
+         			do Screen.setColor(true);
+         			do Screen.drawRectangle((x + size) - 1, y, x + size, y + size);
+      			}
+
+			if (((x + size) > 510) | ((x + size) = 510)) 
+			{
+				return true;
+			}
+
+			return false;
+		}
+
+		return false;	
+   	}
+
+}
