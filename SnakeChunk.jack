@@ -1,35 +1,41 @@
 class SnakeChunk
 {
-	field int x, y, fruitx, fruity, oldFruitX, oldFruitY, size;
-	field Random numGen;
+	field int x, y, oldX, oldY, size, tailCount;
+	field Array tailX, tailY;
 
 
-	constructor SnakeChunk new()
+	constructor SnakeChunk new(int nextx, int nexty)
 	{
 		//start head in midle	
-		let x = 254;
-		let y = 126;
+		let x = nextx;
+		let y = nexty;
+
+		let tailCount = 0;
 
 		//size of head is 4 pixels
 		let size = 4;
 
-		//initialize PRNGR
-		let numGen = Random.new();
+		let tailX = Array.new(200);
+		let tailY = Array.new(200);
 
-		//start fruit in quadrant 2
-		let fruitx = 127;
-  		let fruity = 63;
-		
+		while(tailCount < 200)
+		{
+			let tailX[tailCount] = 0;
+			let tailY[tailCount] = 0;
+			let tailCount = tailCount + 1;
+		}
+
+		let tailCount = 0;
+
 		do draw();
-		do drawFruit();
 
 		return this;
 	}
 
 	method void dispose()
 	{
-        	do Memory.deAlloc(this);
-      		return;
+        do Memory.deAlloc(this);
+      	return;
    	}
 
 	method void draw() 
@@ -39,62 +45,139 @@ class SnakeChunk
       		return;
   	}
 
-	method void setFruitPos()
+	method int getX()
 	{
-		let oldFruitX = fruitx;
-		let oldFruitY = fruity;
+		return x;
+	}
 
-		//find position of fruit relative to the position of x and y
-		let fruitx = numGen.modulusX(oldFruitX);
-		let fruity = numGen.modulusY(oldFruitY);
+	method int getY()
+	{
+		return y;
+	}
 
-		do drawFruit();
-
+	method void addTail()
+	{
+		let tailCount = tailCount + 1;
 		return;
-
 	}
 
-	method void drawFruit()
+	method void drawTail(int oldX, int oldY)
 	{
-		//erase the old fruit
-	    do Screen.setColor(false);
-        do Screen.drawRectangle(oldFruitX, oldFruitY, oldFruitX + size, oldFruitY + size);
+		var int prevX, prevY, prev2X, prev2Y, iterator;
+		let iterator = 0;
 
-        //draw the new fruit
-		do Screen.setColor(true);
-        do Screen.drawRectangle(fruitx, fruity, fruitx + size, fruity + size);
-      	return;
-	}
 
-	method void resetFruitPos()
-	{
-		if(((fruitx > (x - 4)) & (fruitx < (x + 8))) & ((fruity > (y - 4)) & (fruity < (y + 8))))
+		if(tailCount = 0)
 		{
-			do setFruitPos();
+			return;
 		}
 
+
+
+		let prevX = tailX[0];
+		let prevY = tailY[0];
+
+		let tailX[0] = oldX;
+		let tailY[0] = oldY;
+
+
+
+		while(iterator < tailCount)
+		{
+			do Screen.setColor(false);
+         	do Screen.drawRectangle(prevX, prevY, prevX + size, prevY + size);
+
+			do Screen.setColor(true);
+         	do Screen.drawRectangle(tailX[iterator], tailY[iterator], tailX[iterator] + size, tailY[iterator] + size);
+
+
+
+			let prev2X = tailX[iterator + 1];
+			let prev2Y = tailY[iterator + 1];
+
+
+         	let tailX[iterator + 1] = prevX;
+         	let tailY[iterator + 1] = prevY;
+
+
+         	let prevX = prev2X;
+         	let prevY = prev2Y;
+
+         	let iterator = iterator + 1;
+		}
+
+
+		/*
+		if(tailCount = 1)
+		{
+		    do Screen.setColor(false);
+         	do Screen.drawRectangle(tailX[0], tailY[0], tailX[0] + size, tailY[0] + size);
+			let tailX[0] = oldX;
+			let tailY[0] = oldY;
+			do Screen.setColor(true);
+         	do Screen.drawRectangle(tailX[0], tailY[0], tailX[0] + size, tailY[0] + size);
+		}
+
+		
+		if(tailCount > 1)
+		{
+			let tailX[1] = tailX[0];
+			let tailY[1] = tailY[0];
+
+		    do Screen.setColor(false);
+         	do Screen.drawRectangle(tailX[0], tailY[0], tailX[0] + size, tailY[0] + size);
+			let tailX[0] = oldX;
+			let tailY[0] = oldY;
+			do Screen.setColor(true);
+         	do Screen.drawRectangle(tailX[0], tailY[0], tailX[0] + size, tailY[0] + size);
+
+			while(iterator < tailCount)
+			{
+				let tailX[iterator + 1] = tailX[iterator];
+				let tailY[iterator + 1] = tailY[iterator];
+
+				do Screen.setColor(false);
+         		do Screen.drawRectangle(tailX[iterator], tailY[iterator], tailX[iterator] + size, tailY[iterator] + size);
+
+				let tailX[iterator] = tailX[iterator - 1];
+				let tailY[iterator] = tailY[iterator - 1];	
+
+				do Screen.setColor(true);
+         		do Screen.drawRectangle(tailX[iterator], tailY[iterator], tailX[iterator] + size, tailY[iterator] + size);
+
+         		let iterator = iterator + 1;
+			}
+		}
+		*/
+		
+
 		return;
 	}
 
- 
+
    	method boolean moveChunk(int direction) 
 	{
 		
 		if(direction = 1)
 		{
-      			if (y > 1) 
+      		if (y > 1) 
 			{
-         			do Screen.setColor(false);
-         			do Screen.drawRectangle(x, (y + size) - 1, x + size, y + size);
-         			let y = y - 2;
-         			do Screen.setColor(true);
-         			do Screen.drawRectangle(x, y, x + size, y + 1);
-     	 		}
+         		do Screen.setColor(false);
+         		do Screen.drawRectangle(x, (y + size) - 1, x + size, y + size);
+         		let oldX = x;
+         		let oldY = y;
+         		let y = y - 2;
+         		do Screen.setColor(true);
+         		do Screen.drawRectangle(x, y, x + size, y + 1);
+         		do drawTail(oldX, oldY);
+
+     	 	}
 
 			if ((y < 0) | (y = 0)) 
 			{
 				return true;
 			}
+
 
 			return false;
 		}
@@ -105,15 +188,19 @@ class SnakeChunk
 			{
          			do Screen.setColor(false);
          			do Screen.drawRectangle(x, y, x + size, y + 1);
+         			let oldX = x;
+         			let oldY = y;
          			let y = y + 2;
          			do Screen.setColor(true);
          			do Screen.drawRectangle(x, (y + size) - 1, x + size, y + size);
+         			do drawTail(oldX, oldY);
       			}
 
 			if (((y + size) > 254) | ((y + size) = 254)) 
 			{
 				return true;
 			}
+
 
 			return false;
 		}
@@ -124,15 +211,19 @@ class SnakeChunk
 			{
          			do Screen.setColor(false);
          			do Screen.drawRectangle((x + size) - 1, y, x + size, y + size);
+         			let oldX = x;
+         			let oldY = y;
          			let x = x - 2;
          			do Screen.setColor(true);
          			do Screen.drawRectangle(x, y, x + 1, y + size);
+         			do drawTail(oldX, oldY);
       			}
 
 			if ((x < 0) | (x = 0)) 
 			{
 				return true;
 			}
+
 
 			return false;
 		}
@@ -143,15 +234,19 @@ class SnakeChunk
 			{
          			do Screen.setColor(false);
          			do Screen.drawRectangle(x, y, x + 1, y + size);
+         			let oldX = x;
+         			let oldY = y;
          			let x = x + 2;
          			do Screen.setColor(true);
          			do Screen.drawRectangle((x + size) - 1, y, x + size, y + size);
+         			do drawTail(oldX, oldY);
       			}
 
 			if (((x + size) > 510) | ((x + size) = 510)) 
 			{
 				return true;
 			}
+
 
 			return false;
 		}

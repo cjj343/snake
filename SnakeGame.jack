@@ -1,12 +1,14 @@
 class SnakeGame
 {
 	field SnakeChunk head;
+	field Fruit fruit;
 	field int direction;
 
 	//initialize snake location and set direction to zero
 	constructor SnakeGame new()
 	{	
-		let head = SnakeChunk.new();
+		let head = SnakeChunk.new(254, 126);
+		let fruit = Fruit.new();
 		let direction = 0;
 		return this;	
 	}
@@ -34,9 +36,20 @@ class SnakeGame
 			
 			while ((key = 0) & (~exit)) 
 			{
-            			let key = Keyboard.keyPressed();
-            			let exit = head.moveChunk(direction);
-				do head.resetFruitPos();
+				//wait for new keyboard input			
+            	let key = Keyboard.keyPressed();
+
+            	
+            	//check to see if snake head has contacted fruit
+				if(fruit.resetFruitPos(head.getX(), head.getY()))
+				{
+					do head.addTail();
+				}
+
+            	//check to see if head has contacted wall or tail
+            	let exit = head.moveChunk(direction);
+
+
 				do Sys.wait(20);	
          	}
 
