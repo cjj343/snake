@@ -12,6 +12,9 @@ class Main
         //run game
         do game.Run();
 
+        //print final score
+        do game.Stats();
+
         //clean up memory
         do game.dispose();
         

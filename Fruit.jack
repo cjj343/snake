@@ -10,6 +10,8 @@ class Fruit
 		//start fruit in quadrant 2
 		let fruitX = 127;
   		let fruitY = 63;
+
+  		//fruit is same size as snake head
   		let size = 4;
 
 		//initialize PRNGR
@@ -21,13 +23,15 @@ class Fruit
 	}
 
 	method void dispose()
-	{
+	{		
+			do numGen.dispose();
         	do Memory.deAlloc(this);
       		return;
    	}
 
    	method void setFruitPos()
 	{
+		//save old fruit coords
 		let oldFruitX = fruitX;
 		let oldFruitY = fruitY;
 
@@ -54,7 +58,7 @@ class Fruit
 
 	method boolean resetFruitPos(int x, int y)
 	{	
-
+		//check to see if head is touching fruit
 		if(((fruitX > (x - 4)) & (fruitX < (x + 8))) & ((fruitY > (y - 4)) & (fruitY < (y + 8))))
 		{	
 			do setFruitPos();
@@ -64,6 +68,4 @@ class Fruit
 
 		return false;
 	}
-
-
 }
